@@ -3,11 +3,11 @@ package org.example.smartchef.controllers;
 
 import lombok.AllArgsConstructor;
 import org.example.smartchef.dto.HistorialDTO;
+import org.example.smartchef.dto.RegistrarHistorialDTO;
+import org.example.smartchef.models.Historial;
 import org.example.smartchef.services.HistorialService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,11 +20,25 @@ public class HistorialController {
 
 
     @GetMapping("/all/{idUsuario}")
-    public List<HistorialDTO> obtenerHistorialUsuario(Integer idUsuario){
+    public List<HistorialDTO> obtenerHistorialUsuario(@PathVariable Integer idUsuario){
         return service.obtenerHistorialUsuario(idUsuario);
     }
 
-    @PostMapping("/")
+
+    @GetMapping("/semanal/{idUsuario}")
+    public List<HistorialDTO> obtenerHistorialSemanal(@PathVariable Integer idUsuario){
+        return service.obtenerHistorialSemanal(idUsuario);
+    }
+
+
+    @PostMapping("/registrar-historial")
+    public ResponseEntity<Historial> registarHistorial(@RequestBody RegistrarHistorialDTO dto){
+
+        Historial nuevoHistorial = service.registrarHistorial(dto);
+
+        return ResponseEntity.ok(nuevoHistorial);
+
+    }
 
 
 }

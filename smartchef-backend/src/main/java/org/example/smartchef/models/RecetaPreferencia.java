@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"idPreferencia", "idReceta"})
 @Entity
 @Table(name = "receta_preferencia", catalog = "smartchef_db", schema = "public")
 
@@ -21,9 +21,15 @@ public class RecetaPreferencia {
 
     @ManyToOne
     @JoinColumn(name = "id_preferencia")
-    private Preferencia id_preferencia;
+    private Preferencia idPreferencia;
 
     @ManyToOne
     @JoinColumn(name = "id_receta")
-    private Receta id_receta;
+    private Receta idReceta;
+
+
+    public RecetaPreferencia(Receta recetaGuardada, Preferencia pref) {
+        this.idReceta = recetaGuardada;
+        this.idPreferencia = pref;
+    }
 }

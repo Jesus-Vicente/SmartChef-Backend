@@ -3,11 +3,13 @@ package org.example.smartchef.converters;
 
 import org.example.smartchef.dto.CrearUsuarioDTO;
 import org.example.smartchef.dto.UsuarioDTO;
+import org.example.smartchef.dto.UsuarioPopularDTO;
 import org.example.smartchef.models.Foto;
 import org.example.smartchef.models.Usuario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.math.BigInteger;
 import java.util.List;
 
 @Mapper(componentModel = "Spring")
@@ -29,7 +31,6 @@ public interface UsuarioMapper {
     CrearUsuarioDTO convertirADTOCrearUsuario(Usuario usuario);
 
     List<CrearUsuarioDTO> convertirADTOCrearUsuario(List<Usuario> usuarios);
-
 
 
 

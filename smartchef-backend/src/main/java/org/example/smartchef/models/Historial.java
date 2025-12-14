@@ -41,10 +41,10 @@ public class Historial {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario")
-    private Usuario id_usuario;
+    private Usuario idUsuario;
 
     @ManyToOne
     @JoinColumn(name = "id_receta")
-    private Receta id_receta;
+    private Receta idReceta;
 
 }

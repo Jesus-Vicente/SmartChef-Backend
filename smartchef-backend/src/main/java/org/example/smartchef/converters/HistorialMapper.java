@@ -6,16 +6,21 @@ import org.example.smartchef.models.Receta;
 import org.example.smartchef.models.Usuario;
 import org.example.smartchef.services.RecetaService;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface HistorialMapper {
 
+    @Mapping(source = "idUsuario", target = "idUsuario")
+    @Mapping(source = "idReceta", target = "idReceta")
     Historial convertirAEntity(HistorialDTO dto);
 
     List<Historial> convertirAEntity(List<HistorialDTO> dtos);
 
+    @Mapping(source = "idUsuario", target = "idUsuario")
+    @Mapping(source = "idReceta", target = "idReceta")
     HistorialDTO convertirADTO(Historial entity);
 
     List<HistorialDTO> convertirADTO(List<Historial> entidades);
@@ -23,7 +28,7 @@ public interface HistorialMapper {
 
 
     //Convertir Integer a Usuario
-    default Usuario mapUsuario(Integer id){
+    default Usuario mapIdAUsuario(Integer id){
         if (id == null) {
             return null;
         }
@@ -33,7 +38,7 @@ public interface HistorialMapper {
     }
 
     //Convertir Usurio a Integer
-    default Integer mapUsuario(Usuario usuario){
+    default Integer mapUsuarioAId(Usuario usuario){
         if (usuario == null) {
             return null;
         }
@@ -41,17 +46,17 @@ public interface HistorialMapper {
     }
 
     //Covertir Integer a Receta
-    default Integer mapReceta(Integer id){
+    default Receta mapIdAReceta(Integer id){
         if (id == null) {
             return null;
         }
         Receta receta = new Receta();
         receta.setId(id);
-        return receta.getId();
+        return receta;
     }
 
     //Convertir Receta a Integer
-    default Integer mapReceta(Receta receta){
+    default Integer mapRecetaAId(Receta receta){
         if (receta == null) {
             return null;
         }

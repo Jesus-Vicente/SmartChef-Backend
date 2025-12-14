@@ -3,10 +3,8 @@ package org.example.smartchef.converters;
 
 import org.example.smartchef.dto.CrearRecetaDTO;
 import org.example.smartchef.dto.RecetaDTO;
-import org.example.smartchef.models.Foto;
-import org.example.smartchef.models.Ingrediente;
-import org.example.smartchef.models.Receta;
-import org.example.smartchef.models.Usuario;
+import org.example.smartchef.dto.RecetaFiltrosDTO;
+import org.example.smartchef.models.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -40,11 +38,42 @@ public interface RecetaMapper {
     List<CrearRecetaDTO> convertirADTOCrearRecetaConIngredientes(List<Receta> recetas);
 
 
+    @Mapping(source = "ingredientes", target = "nombresIngredientes")
+    @Mapping(source = "recetaPreferencias", target = "idPreferencias")
+    RecetaFiltrosDTO convertirARecetaFiltrosDTO(Receta entity);
+
+    // Mapeo para listas
+    List<RecetaFiltrosDTO> convertirARecetaFiltrosDTO(List<Receta> recetas);
+
+
     default List<String> map(Set<Ingrediente> ingredientesID){
         if (ingredientesID == null) {
             return null;
         } else {
             return ingredientesID.stream().map(Ingrediente::getNombre).collect(Collectors.toList());
+        }
+    }
+
+    default List<RecetaPreferencia> mapPreferenciasToRelaciones(
+            List<Preferencia> preferencias,
+            Receta recetaGuardada) {
+
+        if (preferencias == null || recetaGuardada == null) {
+            return null;
+        }
+
+        return preferencias.stream()
+                .map(pref -> new RecetaPreferencia(recetaGuardada, pref))
+                .collect(Collectors.toList());
+    }
+
+    default List<Integer> mapPreferenciasToIds(Set<RecetaPreferencia> recetaPreferencias){
+        if (recetaPreferencias == null) {
+            return null;
+        } else {
+            return recetaPreferencias.stream()
+                    .map(rp -> rp.getIdPreferencia().getId())
+                    .collect(Collectors.toList());
         }
     }
 

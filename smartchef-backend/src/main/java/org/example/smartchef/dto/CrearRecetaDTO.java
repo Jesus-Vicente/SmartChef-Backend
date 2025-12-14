@@ -22,4 +22,5 @@ public class CrearRecetaDTO {
 
     private Integer id_foto;
     private List<String> nombresIngredientes;
+    private List<Integer> idPreferencias;
 }

@@ -14,7 +14,10 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = {"id_foto", "usuario_creador_id",
+        "coleccion_receta", "receta_ingrediente",
+        "usuarioQueFavorito", "recetaPreferencias",
+        "ingredientes"})
 @Entity
 @Table(name = "receta", catalog = "smartchef_db", schema = "public")
 public class Receta {
@@ -74,6 +77,9 @@ public class Receta {
 
     @OneToMany(mappedBy = "receta")
     private Set<Favorito> usuarioQueFavorito = new HashSet<>();
+
+    @OneToMany(mappedBy = "idReceta")
+    private Set<RecetaPreferencia> recetaPreferencias = new HashSet<>();
 
 
     @ManyToMany
