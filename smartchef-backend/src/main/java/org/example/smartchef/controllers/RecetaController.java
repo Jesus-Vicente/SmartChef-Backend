@@ -39,8 +39,14 @@ public class RecetaController {
 
 
     @GetMapping("/recetasConIngredientes/{id}")
-    public List<CrearRecetaDTO> obtenerRecetasConIngredientes(){
-        return service.obtenerRecetasConIngredientes();
+    public ResponseEntity<CrearRecetaDTO> obtenerRecetasConIngredientes(@PathVariable Integer id){
+        CrearRecetaDTO dto = service.obtenerRecetasConIngredientes(id);
+
+        if (dto == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/crearConIngredientes")
@@ -79,6 +85,24 @@ public class RecetaController {
         return ResponseEntity.ok(recetas);
     }
 
+    @GetMapping("filtros-combinado")
+    public ResponseEntity<List<RecetaDTO>> buscarRecetasCombinadas(
+            @RequestParam(required = false) List<String> ingredientes,
+            @RequestParam(required = false) List<String> preferencias) {
+
+        FiltroRecetaDTO filtros = new FiltroRecetaDTO();
+        filtros.setNombresIngredientes(ingredientes);
+        filtros.setNombresPreferencias(preferencias);
+
+        List<RecetaDTO> recetaFiltradas = service.buscarRecetasCombinadas(filtros);
+
+        if (recetaFiltradas.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(recetaFiltradas);
+    }
+
     @GetMapping("/estadisticas/ingredientes")
     public ResponseEntity<List<IngredienteEstadisticasDTO>> getTop5Ingredientes() {
 
@@ -102,6 +126,19 @@ public class RecetaController {
 
         return ResponseEntity.notFound().build();
     }
+
+
+    @GetMapping("/detalle/{idReceta}")
+    public ResponseEntity<RecetaDTO> obtenerDetallesReceta(@PathVariable("idReceta") Integer idReceta){
+        RecetaDTO dto = service.obtenerDetallesReceta(idReceta);
+
+        if (dto == null) {
+            return ResponseEntity.notFound().build(); 
+        }
+
+        return ResponseEntity.ok(dto);
+    }
+
 
     @PutMapping("/modificar/{id}")
     public void modificarReceta(@PathVariable Integer id, @RequestBody CrearRecetaDTO dto){

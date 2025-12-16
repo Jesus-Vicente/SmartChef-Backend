@@ -14,6 +14,27 @@ import java.util.Map;
 @RestControllerAdvice
 public class ErrorController {
 
+    //404 NOT FOUND
+    @ExceptionHandler(ElementoNoEncontradoException.class)
+    public ResponseEntity<Map<String, String>> manejarElementoNoEncontrado(ElementoNoEncontradoException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", ex.getMessage());
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+
+    //400 BAD REQUEST
+    @ExceptionHandler(ValidacionDeNegocioException.class)
+    public ResponseEntity<Object> handleValidacionDeNegocio(ValidacionDeNegocioException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Error de Validación de Negocio");
+        response.put("mensaje", ex.getMessage());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> controladorErrores(MethodArgumentNotValidException exception) {
 

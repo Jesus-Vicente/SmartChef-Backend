@@ -34,7 +34,6 @@ public class PreferenciaService {
         if (preferencia.isPresent()) {
             Preferencia preferenciaAModificar = preferencia.get();
             preferenciaAModificar.setNombrePreferencia(dto.getNombrePreferencia());
-            preferenciaAModificar.setDescripcion(dto.getDescripcion());
         }
     }
 

@@ -4,6 +4,7 @@ import lombok.*;
 import org.example.smartchef.models.Dificultad;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,7 +24,11 @@ public class RecetaDTO {
     private LocalDate fecha_creacion;
     private boolean activa;
 
+    private List<String> preferencias;
+    private List<IngredienteRecetaDTO> ingredientesConDetalle;
+
     //FK
     private Integer usuario_creador_id;
     private Integer id_foto;
+    private String url_foto;
 }

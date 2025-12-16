@@ -25,5 +25,6 @@ public class Preferencia {
     @Column(name = "descripcion")
     private String descripcion;
 
+
 }
 

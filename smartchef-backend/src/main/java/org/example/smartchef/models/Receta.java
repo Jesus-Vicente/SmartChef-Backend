@@ -14,10 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@EqualsAndHashCode(exclude = {"id_foto", "usuario_creador_id",
-        "coleccion_receta", "receta_ingrediente",
-        "usuarioQueFavorito", "recetaPreferencias",
-        "ingredientes"})
+@EqualsAndHashCode(exclude = {"id_foto", "usuario_creador_id", "coleccion_receta", "receta_ingrediente", "usuarioQueFavorito", "recetaPreferencias"})
 @Entity
 @Table(name = "receta", catalog = "smartchef_db", schema = "public")
 public class Receta {
@@ -30,10 +27,12 @@ public class Receta {
     @Column(name = "nombre")
     private String nombre;
 
-    @Column(name = "descripcion")
+    // CORRECCIÓN 1: Permite texto largo (soluciona el error de longitud VARCHAR(255))
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
-    @Column(name = "instrucciones")
+    // CORRECCIÓN 1: Permite texto largo (soluciona el error de longitud VARCHAR(255))
+    @Column(name = "instrucciones", columnDefinition = "TEXT")
     private String instrucciones;
 
     @Column(name = "tiempo_preparacion")
@@ -72,7 +71,9 @@ public class Receta {
     @OneToMany(mappedBy = "id_receta")
     private Set<ColeccionReceta> coleccion_receta;
 
-    @OneToMany(mappedBy = "id_receta")
+    // CORRECCIÓN 2: CRÍTICA - Añade cascade y orphanRemoval
+    // Esto fuerza a JPA a gestionar la colección: elimina los antiguos y luego inserta los nuevos.
+    @OneToMany(mappedBy = "id_receta", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RecetaIngrediente> receta_ingrediente;
 
     @OneToMany(mappedBy = "receta")
@@ -82,9 +83,4 @@ public class Receta {
     private Set<RecetaPreferencia> recetaPreferencias = new HashSet<>();
 
 
-    @ManyToMany
-    @JoinTable(name = "receta_ingrediente",
-                joinColumns = @JoinColumn(name = "id_receta"),
-                inverseJoinColumns = @JoinColumn(name = "id_ingrediente"))
-    private Set<Ingrediente> ingredientes = new HashSet<>();
 }

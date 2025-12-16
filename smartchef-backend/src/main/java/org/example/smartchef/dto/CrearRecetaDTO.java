@@ -20,7 +20,11 @@ public class CrearRecetaDTO {
     private Double costo_estimado;
     private Integer porciones;
 
+    private Integer idUsuarioCreador;
     private Integer id_foto;
-    private List<String> nombresIngredientes;
+
+    private String url_foto;
+
+    private List<IngredienteRecetaDTO> ingredientesConDetalle;
     private List<Integer> idPreferencias;
 }

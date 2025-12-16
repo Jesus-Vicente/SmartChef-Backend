@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.example.smartchef.converters.UsuarioMapper;
 import org.example.smartchef.dto.CrearUsuarioDTO;
 import org.example.smartchef.dto.UsuarioDTO;
+import org.example.smartchef.exception.ValidacionDeNegocioException;
 import org.example.smartchef.models.Preferencia;
 import org.example.smartchef.models.Usuario;
 import org.example.smartchef.repositories.IPreferenciaRepository;
@@ -39,10 +40,23 @@ public class UsuarioService {
 
     public void crearUsuarioConPreferencias(CrearUsuarioDTO dto){
         Usuario usuario = mapper.convertirAEntityCrearUsuario(dto);
-        Set<Integer> idsPreferencias = dto.getPreferenciasID();
+        Set<Integer> idsPreferenciasEnviadas = dto.getPreferenciasID();
+        Set<Preferencia> preferenciasValidas = new HashSet<>();
 
-        List<Preferencia> preferencias = preferenciaRepository.findAllById(idsPreferencias);
-        usuario.setPreferencias(new HashSet<>(preferencias));
+        for (Integer idPreferencia : idsPreferenciasEnviadas) {
+            Optional<Preferencia> preferenciaObtenida = preferenciaRepository.findById(idPreferencia);
+
+            //Opcional - Excepcion Añadida
+            if (preferenciaObtenida.isPresent()) {
+                preferenciasValidas.add(preferenciaObtenida.get());
+            } else {
+                throw new ValidacionDeNegocioException(
+                        "La preferencia con el id " + idPreferencia + " no existe. No se puede completar el registro."
+                );
+            }
+        }
+
+        usuario.setPreferencias(new HashSet<>(preferenciasValidas));
 
         repository.save(usuario);
     }
