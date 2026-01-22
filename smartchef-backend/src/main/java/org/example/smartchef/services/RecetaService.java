@@ -39,6 +39,17 @@ public class RecetaService {
                 .orElse(null);
     }
 
+    public RecetaDTO findById(Integer idReceta) {
+        Receta receta = repository.findById(idReceta).orElse(null);
+
+        if (receta == null) {
+            throw new RuntimeException("No existe la receta con el id: " + idReceta);
+        }
+
+        return mapper.convertirADTO(receta);
+
+    }
+
     @Transactional
     public void crearReceta(CrearRecetaDTO dto){
 
@@ -226,7 +237,7 @@ public class RecetaService {
         Receta recetaNueva = repository.findById(id).orElse(null);
         if (recetaNueva == null) return;
 
-        // ---------------- FOTO ----------------
+
         if (dto.getUrl_foto() != null && !dto.getUrl_foto().isEmpty()) {
             Foto foto = recetaNueva.getId_foto();
             if (foto != null) {
@@ -239,7 +250,7 @@ public class RecetaService {
             }
         }
 
-        // ---------------- DATOS BÁSICOS ----------------
+
         recetaNueva.setNombre(dto.getNombre());
         recetaNueva.setDescripcion(dto.getDescripcion());
         recetaNueva.setInstrucciones(dto.getInstrucciones());
@@ -248,7 +259,7 @@ public class RecetaService {
         recetaNueva.setCosto_estimado(dto.getCosto_estimado());
         recetaNueva.setPorciones(dto.getPorciones());
 
-        // ================= INGREDIENTES (CLAVE) =================
+
         recetaIngredienteRepository.eliminarIngredientesPorReceta(id);
 
         if (dto.getIngredientesConDetalle() != null && !dto.getIngredientesConDetalle().isEmpty()) {
@@ -277,7 +288,6 @@ public class RecetaService {
             }
         }
 
-        // ================= PREFERENCIAS =================
         recetaNueva.getRecetaPreferencias().clear();
 
         if (dto.getIdPreferencias() != null && !dto.getIdPreferencias().isEmpty()) {
