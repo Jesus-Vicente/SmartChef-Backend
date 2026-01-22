@@ -7,6 +7,7 @@ import org.example.smartchef.models.Dificultad;
 import org.example.smartchef.models.Receta;
 import org.example.smartchef.repositories.IRecetaRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +52,11 @@ public class RecetaServiceTest {
 
     //When
     //COMPROACIONES
+
+    @Test
+    @DisplayName("Servicio 1 -> Caso Positivo")
+    public void obtenerRecetaPorIdTest(){
+        assert dto != null;
+    }
 
 }
