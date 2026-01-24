@@ -46,7 +46,7 @@ public class HistorialService {
 
 
     @Transactional
-    public Historial registrarHistorial(RegistrarHistorialDTO dto){
+    public HistorialDTO registrarHistorial(RegistrarHistorialDTO dto){
         Usuario usuario = usuarioRepository.findById(dto.getIdUsuario()).orElse(null);
         Receta receta = recetaRepository.findById(dto.getIdReceta()).orElse(null);
 
@@ -60,11 +60,17 @@ public class HistorialService {
 
         LocalDateTime fechaRegistro = dto.getFecha_realizacion() != null ? dto.getFecha_realizacion() : LocalDateTime.now();
 
+        if (fechaRegistro.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("No se puede registrar un historial en el futuro");
+        }
+
         registroHistorial.setFecha_realizacion(fechaRegistro);
 
         registroHistorial.setEstado("EN PROCESO");
 
-        return repository.save(registroHistorial);
+        Historial guardadoHistorial = repository.save(registroHistorial);
+
+        return mapper.convertirADTO(guardadoHistorial);
     }
 
 

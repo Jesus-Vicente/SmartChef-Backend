@@ -30,22 +30,21 @@ public class FavoritoService {
         Optional<Favorito> favoritoExistente = repository.findByUsuarioIdAndRecetaId(id_usuario, id_receta);
 
         if (favoritoExistente.isPresent()) {
-            repository.delete(favoritoExistente.get());
-            return null;
-        } else {
-
-            Usuario usuario = usuarioRepository.findById(id_usuario).orElseThrow();
-            Receta receta = recetaRepository.findById(id_receta).orElseThrow();
-
-            Favorito nuevoFavorito = new Favorito();
-            nuevoFavorito.setUsuario(usuario);
-            nuevoFavorito.setReceta(receta);
-            nuevoFavorito.setFecha_guardado(java.time.LocalDate.now());
-
-            Favorito favoritoguardado = repository.save(nuevoFavorito);
-
-            return favoritoMapper.convertirADTO(favoritoguardado);
+           throw new RuntimeException("La receta ya está marcada como favorita por este usuario.");
         }
+
+        Usuario usuario = usuarioRepository.findById(id_usuario).orElseThrow( () -> new RuntimeException("El usuario con ID: " + id_usuario + " no existe") );
+        Receta receta = recetaRepository.findById(id_receta).orElseThrow(  () -> new RuntimeException("La receta con ID: " + id_receta + " no existe"));
+
+        Favorito nuevoFavorito = new Favorito();
+        nuevoFavorito.setUsuario(usuario);
+        nuevoFavorito.setReceta(receta);
+        nuevoFavorito.setFecha_guardado(java.time.LocalDate.now());
+
+        Favorito favoritoguardado = repository.save(nuevoFavorito);
+
+        return favoritoMapper.convertirADTO(favoritoguardado);
+
     }
 
 }

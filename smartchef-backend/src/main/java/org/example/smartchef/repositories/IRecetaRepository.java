@@ -37,8 +37,8 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
 
 
     @Query(value = "SELECT i.nombre AS nombreIngrediente, COUNT(ri.id_receta) AS cantidadRecetas " +
-            "FROM public.ingrediente i " +
-            "JOIN public.receta_ingrediente ri ON ri.id_ingrediente = i.id " +
+            "FROM smartchef_db.ingrediente i " +
+            "JOIN smartchef_db.receta_ingrediente ri ON ri.id_ingrediente = i.id " +
             "GROUP BY i.id, i.nombre " +
             "ORDER BY cantidadRecetas DESC " +
             "LIMIT 5",
@@ -54,9 +54,9 @@ public interface IRecetaRepository extends JpaRepository<Receta, Integer> {
             "from Favorito f " +
             "join f.receta r " +
             "group by r.usuario_creador_id.id, r.usuario_creador_id.nombre, r.nombre " +
-            "order by count (f.id) desc "
+            "order by count(f.id) desc, r.nombre asc"
     )
-    Optional<UsuarioPopularDTO> findTop1UsuarioPopular();
+    List<UsuarioPopularDTO> findTop1UsuarioPopular();
 
 
     @Query(value = "SELECT r.* FROM smartchef.receta r " +

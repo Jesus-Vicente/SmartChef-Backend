@@ -33,10 +33,8 @@ public class RecetaService {
         return mapper.convertirADTO(repository.findAll());
     }
 
-    public RecetaDTO obtenerDetallesReceta (Integer idReceta){
-        return repository.findById(idReceta)
-                .map(mapper::convertirADTO)
-                .orElse(null);
+    public RecetaDTO obtenerDetallesReceta(Integer idReceta) {
+        return mapper.convertirADTO(repository.findById(idReceta).orElse(null));
     }
 
     public RecetaDTO findById(Integer idReceta) {
@@ -228,7 +226,7 @@ public class RecetaService {
     }
 
     public Optional<UsuarioPopularDTO> obtenerUsuarioConRecetaMasFavorita() {
-        return repository.findTop1UsuarioPopular();
+        return repository.findTop1UsuarioPopular().stream().findFirst();
     }
 
     @Transactional

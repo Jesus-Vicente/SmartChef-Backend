@@ -83,5 +83,9 @@ public class Receta {
     @OneToMany(mappedBy = "idReceta")
     private Set<RecetaPreferencia> recetaPreferencias = new HashSet<>();
 
+    @OneToMany(mappedBy = "id_receta")
+    private Set<CarritoCompra> carritoCompra;
+
+
 
 }

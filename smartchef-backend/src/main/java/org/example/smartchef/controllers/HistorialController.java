@@ -32,9 +32,9 @@ public class HistorialController {
 
 
     @PostMapping("/registrar-historial")
-    public ResponseEntity<Historial> registarHistorial(@RequestBody RegistrarHistorialDTO dto){
+    public ResponseEntity<HistorialDTO> registarHistorial(@RequestBody RegistrarHistorialDTO dto){
 
-        Historial nuevoHistorial = service.registrarHistorial(dto);
+        HistorialDTO nuevoHistorial = service.registrarHistorial(dto);
 
         return ResponseEntity.ok(nuevoHistorial);
 

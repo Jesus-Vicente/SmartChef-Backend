@@ -2,15 +2,13 @@ package org.example.smartchef.services;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.example.smartchef.dto.FavoritoDTO;
 import org.example.smartchef.models.Dificultad;
 import org.example.smartchef.models.Receta;
 import org.example.smartchef.models.Usuario;
 import org.example.smartchef.repositories.IFavoritoRepository;
 import org.example.smartchef.repositories.IUsuarioRepository;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -27,65 +25,69 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FavoritoServiceTest {
 
     @Autowired
-    private FavoritoService favoritoService;
-
-    @Autowired
-    private IFavoritoRepository repository;
+    private FavoritoService service;
 
     @Autowired
     private EntityManager entityManager;
 
-    @Autowired
-    private UsuarioService usuarioService;
-
-
     private Integer idUsuario;
     private Integer idReceta;
 
-    @BeforeAll
-    void cargarDatos(){
+    @BeforeEach
+    void cargarDatos() {
 
-        Usuario usuarioTestFavorito = new Usuario();
-        usuarioTestFavorito.setNombre("Usuario Test Favoritos");
-        usuarioTestFavorito.setEmail("usuario@gmail.com");
-        usuarioTestFavorito.setPreferencias(new HashSet<>());
-        usuarioTestFavorito.setFavoritos(new HashSet<>());
-        usuarioTestFavorito.setId(idUsuario);
+        Usuario usuarioTest = new Usuario();
+        usuarioTest.setNombre("Usuario Test Favorito");
+        usuarioTest.setEmail("testFavorito@gmail.com");
+        entityManager.persist(usuarioTest);
+        idUsuario = usuarioTest.getId();
 
-        Receta recetaTestFavorito = new Receta();
-        recetaTestFavorito.setNombre("Tortilla Test");
-        recetaTestFavorito.setDescripcion("Receta Test");
-        recetaTestFavorito.setDificultad(Dificultad.ALTA);
-        recetaTestFavorito.setId(idReceta);
 
-        entityManager.persist(usuarioTestFavorito);
-        entityManager.persist(recetaTestFavorito);
+        Receta recetaTest = new Receta();
+        recetaTest.setNombre("Receta Test Favorito");
+        recetaTest.setUsuario_creador_id(usuarioTest);
+        recetaTest.setInstrucciones("Instrucciones de prueba");
+        recetaTest.setDificultad(Dificultad.MEDIA);
+        entityManager.persist(recetaTest);
+        idReceta = recetaTest.getId();
 
     }
 
     @Test
     @DisplayName("Servicio 5 -> Caso Positivo")
-    public void marcarComoFavoritoTest(){
+    public void marcarRecetaFavoritoTest(){
 
         //Given
 
-        //Then
-        favoritoService.marcarComoFavorito(idUsuario, idReceta);
+        FavoritoDTO dto = new FavoritoDTO();
+        dto.setUsuario(idUsuario);
+        dto.setReceta(idReceta);
 
         //When
-        Usuario usuarioMarcado = entityManager.find(Usuario.class, idUsuario);
 
-        boolean esFavorita = usuarioMarcado.getFavoritos().stream()
-                .anyMatch(recetaFavorita -> recetaFavorita.getReceta().getId().equals(idReceta));
+        service.marcarComoFavorito(dto.getUsuario(), dto.getReceta());
 
-        assertTrue(esFavorita, "La receta con id: " + idReceta + " ha sido agregada como favorita al usuario con id: " + idUsuario);
+        //Then
+        assertNotNull(dto, "El DTO no debe ser nulo");
+        assertEquals(idUsuario, dto.getUsuario(), "El usuario no coincide");
+        assertEquals(idReceta, dto.getReceta(), "La receta no coincide");
 
     }
 
-//    @Test
-//    @DisplayName("Servicio 5 -> Caso Negativo")
-//    public void marcarComoFavoritoTestNegativo(){
-//        service.marcarComoFavorito(idUsuario, idReceta);
-//    }
+    @Test
+    @DisplayName("Servicio 5 -> Caso Negativo")
+    public void marcarRecetaFavoritoTestNegativo(){
+
+        //Given
+        service.marcarComoFavorito(idUsuario, idReceta);
+
+        //When
+
+        //Then
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> service.marcarComoFavorito(idUsuario, idReceta));
+
+        assertEquals("La receta ya está marcada como favorita por este usuario.", exception.getMessage());
+        System.out.println(exception.getMessage());
+    }
 
 }

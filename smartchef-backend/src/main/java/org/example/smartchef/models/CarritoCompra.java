@@ -11,8 +11,8 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"carritoIngrediente", "id_usuario"})
-@EqualsAndHashCode(exclude = {"carritoIngrediente", "id_usuario"})
+@ToString(exclude = {"carritoIngrediente", "id_usuario", "id_receta"})
+@EqualsAndHashCode(exclude = {"carritoIngrediente", "id_usuario", "id_receta"})
 @Entity
 @Table(name = "carritocompra")
 
@@ -42,7 +42,11 @@ public class CarritoCompra {
     @JoinColumn(name = "id_usuario")
     private Usuario id_usuario;
 
-    @OneToMany(mappedBy = "id_carrito")
+    @ManyToOne
+    @JoinColumn(name = "id_receta")
+    private Receta id_receta;
+
+    @OneToMany(mappedBy = "id_carrito", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<CarritoIngrediente> carritoIngrediente;
 
 }

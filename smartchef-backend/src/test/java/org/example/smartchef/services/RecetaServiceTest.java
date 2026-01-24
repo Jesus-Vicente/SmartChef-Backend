@@ -4,21 +4,14 @@ package org.example.smartchef.services;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.example.smartchef.dto.*;
-import org.example.smartchef.models.Dificultad;
-import org.example.smartchef.models.Ingrediente;
-import org.example.smartchef.models.Receta;
-import org.example.smartchef.models.Usuario;
-import org.example.smartchef.repositories.IRecetaRepository;
+import org.example.smartchef.models.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.hateoas.server.EntityLinks;
-import org.springframework.plugin.core.OrderAwarePluginRegistry;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,6 +29,8 @@ public class RecetaServiceTest {
 
     private Integer idUsuario;
 
+    private Integer idReceta;
+
     private Integer idIngrediente1;
     private Integer idIngrediente2;
 
@@ -51,15 +46,41 @@ public class RecetaServiceTest {
 
         Ingrediente ingredienteTest1 = new Ingrediente();
         ingredienteTest1.setNombre("Tomate");
+        ingredienteTest1.setUnidad_medida("kg");
         entityManager.persist(ingredienteTest1);
         idIngrediente1 = ingredienteTest1.getId();
 
         Ingrediente ingredienteTest2 = new Ingrediente();
         ingredienteTest2.setNombre("Cebolla");
+        ingredienteTest2.setUnidad_medida("kg");
         entityManager.persist(ingredienteTest2);
         idIngrediente2 = ingredienteTest2.getId();
 
+        Receta receta = new Receta();
+        receta.setNombre("Receta Test");
+        receta.setUsuario_creador_id(usuarioTest);
+        receta.setInstrucciones("Instrucciones de prueba");
+        receta.setTiempo_preparacion(10);
+        receta.setFecha_creacion(java.time.LocalDate.now());
+        receta.setDificultad(Dificultad.MEDIA);
 
+        entityManager.persist(receta);
+        idReceta = receta.getId();
+
+        RecetaIngrediente recetaIngrediente = new RecetaIngrediente();
+        recetaIngrediente.setId_receta(receta);
+        recetaIngrediente.setId_ingrediente(ingredienteTest1);
+        recetaIngrediente.setCantidad(1.0);
+        recetaIngrediente.setUnidad(ingredienteTest1.getUnidad_medida());
+
+        RecetaIngrediente recetaIngrediente2 = new RecetaIngrediente();
+        recetaIngrediente2.setId_receta(receta);
+        recetaIngrediente2.setId_ingrediente(ingredienteTest2);
+        recetaIngrediente2.setCantidad(3.0);
+        recetaIngrediente2.setUnidad(ingredienteTest2.getUnidad_medida());
+
+        entityManager.persist(recetaIngrediente);
+        entityManager.persist(recetaIngrediente2);
 
 
 
@@ -118,40 +139,22 @@ public class RecetaServiceTest {
     public void buscarRecetaPorIdIngredienteTest() {
 
         //Given
-        CrearRecetaDTO dto = new CrearRecetaDTO();
-        dto.setIdUsuarioCreador(idUsuario);
-        dto.setNombre("Receta de prueba 2");
-
-        IngredienteRecetaDTO ingredienteRecetaDTOTest2 = new IngredienteRecetaDTO();    
-        ingredienteRecetaDTOTest2.setNombre("Tomate");
-        ingredienteRecetaDTOTest2.setCantidad(1.0);
-        ingredienteRecetaDTOTest2.setUnidad("unidad");
-
-        dto.setIngredientesConDetalle(List.of(ingredienteRecetaDTOTest2));
-
-        service.crearReceta(dto);
-
-
-
         CrearRecetaFiltrosDTO filtros = new CrearRecetaFiltrosDTO();
-        filtros.setIngredientes(new ArrayList<>(List.of(idIngrediente1)));
+        filtros.setIngredientes(List.of(idIngrediente1, idIngrediente2));
         filtros.setIdPreferencia(null);
 
         //When
         List<RecetaFiltrosDTO> recetasConFiltros = service.buscarRecetasConFiltros(filtros);
 
         //Then
-        assertNotNull(recetasConFiltros);
-        System.out.println("Recetas encontradas: " + recetasConFiltros.size());
-
-        assertFalse(recetasConFiltros.isEmpty(), "Debería encontrar la receta con Tomate");
-        assertEquals("Receta de prueba 2", recetasConFiltros.get(0).getNombre());
+        assertFalse(recetasConFiltros.isEmpty(), "La lista de resultados no debería estar vacía");
+        assertEquals("Receta Test", recetasConFiltros.get(0).getNombre(), "El nombre de la receta no coincide");
 
     }
 
     @Test
     @DisplayName("Servicio 3 -> Caso Negativo")
-    public void obtenerDetalleRecetaInexistenteTest() {
+    public void obtenerRecetaConIngredienteInexistenteTest() {
         // Given
         CrearRecetaFiltrosDTO filtros = new CrearRecetaFiltrosDTO();
         filtros.setIngredientes(List.of(5));
@@ -166,6 +169,140 @@ public class RecetaServiceTest {
         assertTrue(recetasConFiltros.isEmpty(), "La lista debería estar vacía cuando el ID del ingrediente no existe");
 
         System.out.println("ID inexistente: " + recetasConFiltros.size());
+    }
+
+    @Test
+    @DisplayName("Servicio 4 -> Caso Positivo")
+    public void obtenerDetallesRecetaTest(){
+        //Given
+        RecetaDTO dto = service.obtenerDetallesReceta(idReceta);
+
+        //When
+        service.findById(idReceta);
+        System.out.println(dto.toString());
+
+        //Then
+        assertNotNull(dto);
+        assertEquals("Receta Test", dto.getNombre());
+
+
+    }
+
+    @Test
+    @DisplayName("Servicio 4 -> Caso Negativo")
+    public void obtenerDetallesRecetaInexistenteTest(){
+        //Given
+        Integer idRecetaInexistente = 10;
+
+        //When
+        RecetaDTO dto = service.obtenerDetallesReceta(idRecetaInexistente);
+
+        //Then
+        assertNull(dto, "Devuelve NULL cuando la receta no existe");
+
+    }
+
+
+    @Test
+    @DisplayName("Servicio 9 -> Caso Positivo")
+    public void obtenerTop5IngredientesTest(){
+        // When
+        List<IngredienteEstadisticasDTO> estadisticas = service.obtenerTop5Ingredientes();
+
+        // Then
+        assertNotNull(estadisticas, "La lista no debe ser nula");
+        assertFalse(estadisticas.isEmpty(), "Debería haber datos en las estadísticas");
+
+        // Extraemos nombres para verificar presencia sin importar el orden del empate
+        List<String> nombres = estadisticas.stream()
+                .map(IngredienteEstadisticasDTO::getNombreIngrediente)
+                .toList();
+
+        assertTrue(nombres.contains("Tomate"), "Debe contener Tomate");
+        assertTrue(nombres.contains("Cebolla"), "Debe contener Cebolla");
+
+        System.out.println(estadisticas);
+    }
+
+    @Test
+    @DisplayName("Servicio 9 -> Caso Negativo")
+    public void obtenerTop5IngredientesTestNegativo(){
+        //Given
+        entityManager.createQuery("DELETE FROM RecetaIngrediente").executeUpdate();
+        entityManager.createQuery("DELETE FROM Receta").executeUpdate();
+        entityManager.createQuery("DELETE FROM Ingrediente").executeUpdate();
+        entityManager.flush();
+        entityManager.clear();
+
+        //When
+        List<IngredienteEstadisticasDTO> estadisticas = service.obtenerTop5Ingredientes();
+
+
+        //Then
+        assertNotNull(estadisticas, "La respuesta no debe ser null");
+        assertTrue(estadisticas.isEmpty(), "Debe retornar una lista vacía si no hay recetas");
+
+    }
+
+    @Test
+    @DisplayName("Servicio 10 -> Caso Positivo")
+    public void obtenerUsuarioPopularTest() {
+        // Given
+        Usuario usuarioVotante = entityManager.find(Usuario.class, idUsuario);
+        Receta recetaFavorita = entityManager.find(Receta.class, idReceta);
+
+        Favorito favorito = new Favorito();
+        favorito.setUsuario(usuarioVotante);
+        favorito.setReceta(recetaFavorita);
+        favorito.setFecha_guardado(java.time.LocalDate.now());
+
+        entityManager.persist(favorito);
+
+        // When
+        Optional<UsuarioPopularDTO> popular = service.obtenerUsuarioConRecetaMasFavorita();
+
+        // Then
+        assertTrue(popular.isPresent(), "Debería existir un usuario popular");
+        assertEquals("Usuario Test Receta", popular.get().getNombreUsuario(), "El nombre del usuario no coincide");
+        assertEquals(1, popular.get().getCantidadFavoritos(), "La cantidad de favoritos no coincide");
+
+        System.out.println("Usuario Popular: " + popular.get().getNombreUsuario());
+        System.out.println("Receta Popular: " + popular.get().getNombreRecetaPopular());
+
+    }
+
+    @Test
+    @DisplayName("Servicio 10 -> Caso Negativo")
+    public void obtenerUsuarioPopularEmpateTest() {
+        // Given
+
+        Receta receta2 = new Receta();
+        receta2.setNombre("Receta Empate");
+        receta2.setUsuario_creador_id(entityManager.find(Usuario.class, idUsuario));
+        receta2.setDificultad(Dificultad.ALTA);
+        entityManager.persist(receta2);
+
+        Favorito f1 = new Favorito();
+        f1.setUsuario(entityManager.find(Usuario.class, idUsuario));
+        f1.setReceta(entityManager.find(Receta.class, idReceta));
+        entityManager.persist(f1);
+
+        Favorito f2 = new Favorito();
+        f2.setUsuario(entityManager.find(Usuario.class, idUsuario));
+        f2.setReceta(receta2);
+        entityManager.persist(f2);
+
+        // When
+        Optional<UsuarioPopularDTO> resultado = service.obtenerUsuarioConRecetaMasFavorita();
+
+        // Then
+        assertNotNull(resultado);
+        assertTrue(resultado.isPresent(), "El sistema debe retornar una de las recetas empatadas");
+        assertEquals(1L, resultado.get().getCantidadFavoritos(), "El conteo de favoritos debe ser correcto");
+
+        System.out.println("Usuario Popular en caso de empate: " + resultado.get().getNombreUsuario());
+        System.out.println("Receta Popular en caso de empate: " + resultado.get().getNombreRecetaPopular());
+
     }
 
 }

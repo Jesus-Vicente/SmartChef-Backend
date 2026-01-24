@@ -32,9 +32,14 @@ public class CarritoCompraService {
         Integer recetaId = dto.getRecetaId();
         Integer usuarioId = dto.getUsuarioId();
 
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow();
+        boolean listaCompraExistente = carritoCompraRepository.existeCarritoParaUsuarioYReceta(usuarioId, recetaId);
+        if (listaCompraExistente) {
+            throw new RuntimeException("Ya existe una lista de compra para esta receta");
+        }
 
-        Receta receta = recetaRepository.findById(recetaId).orElseThrow();
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElseThrow( () -> new RuntimeException("El usuario con ID: " + usuarioId + " no existe") );
+
+        Receta receta = recetaRepository.findById(recetaId).orElseThrow( () -> new RuntimeException("La receta con ID: " + recetaId + " no existe") );
 
         List<RecetaIngrediente> ingredientesReceta = recetaIngredienteRepository.findByRecetaId(recetaId);
 
@@ -44,8 +49,9 @@ public class CarritoCompraService {
 
         CarritoCompra nuevoCarrito = new CarritoCompra();
         nuevoCarrito.setId_usuario(usuario);
+        nuevoCarrito.setId_receta(receta);
         nuevoCarrito.setFecha_creacion(java.time.LocalDate.now());
-        nuevoCarrito.setEstado("");
+        nuevoCarrito.setEstado("PENDIENTE");
 
         Set<CarritoIngrediente> itemsCarrito = new HashSet<>();
 
