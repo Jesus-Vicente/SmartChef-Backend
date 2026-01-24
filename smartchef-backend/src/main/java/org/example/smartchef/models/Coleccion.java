@@ -14,7 +14,7 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "coleccion", catalog = "smartchef_db", schema = "public")
+@Table(name = "coleccion")
 
 public class Coleccion {
 

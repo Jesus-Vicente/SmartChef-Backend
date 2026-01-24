@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "receta_ingrediente", catalog = "smartchef_db", schema = "public")
+@Table(name = "receta_ingrediente")
 
 public class RecetaIngrediente {
 

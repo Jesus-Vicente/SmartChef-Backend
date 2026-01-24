@@ -27,7 +27,7 @@ public class UsuarioService {
     private IPreferenciaRepository preferenciaRepository;
 
     public UsuarioDTO buscarPorId(Integer id){
-        Usuario usuario = repository.findById(id).orElseThrow();
+        Usuario usuario = repository.findById(id).orElse(null);
 
         return mapper.convertirADTO(usuario);
     }

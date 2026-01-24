@@ -13,7 +13,7 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "foto", catalog = "smartchef_db", schema = "public")
+@Table(name = "foto")
 public class Foto {
 
     @Id
@@ -30,7 +30,7 @@ public class Foto {
     @Column(name = "fecha_subida")
     private LocalDateTime fecha_subida;
 
-    @Column(name = "tipo_foto")
+    @Column(name = "tipo_foto", columnDefinition = "integer")
     @Enumerated(EnumType.ORDINAL)
     private TipoFoto tipo_foto;
 

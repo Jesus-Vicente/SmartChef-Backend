@@ -20,7 +20,7 @@ public interface UsuarioMapper {
 
     List<Usuario> convertirAEntity(List<UsuarioDTO> dtos);
 
-
+    @Mapping(source = "foto", target = "foto")
     UsuarioDTO convertirADTO(Usuario entity);
 
     List<UsuarioDTO> convertirADTO(List<Usuario> usuario);

@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode(exclude = {"id_foto", "usuario_creador_id", "coleccion_receta", "receta_ingrediente", "usuarioQueFavorito", "recetaPreferencias"})
 @Entity
-@Table(name = "receta", catalog = "smartchef_db", schema = "public")
+@Table(name = "receta")
 public class Receta {
 
     @Id
@@ -38,8 +38,9 @@ public class Receta {
     @Column(name = "tiempo_preparacion")
     private Integer tiempo_preparacion;
 
+
+    @Enumerated(EnumType.STRING) // Guarda "FACIL", "MEDIA" en lugar de 0, 1
     @Column(name = "dificultad")
-    @Enumerated(EnumType.ORDINAL)
     private Dificultad dificultad;
 
     @Column(name = "costo_estimado")

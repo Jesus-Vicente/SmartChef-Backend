@@ -14,7 +14,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "rol", catalog = "smartchef_db", schema = "public")
+@Table(name = "rol")
 public class Rol {
 
     @Id
