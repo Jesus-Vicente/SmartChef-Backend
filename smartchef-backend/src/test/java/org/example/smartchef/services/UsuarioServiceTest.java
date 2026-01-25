@@ -2,19 +2,25 @@ package org.example.smartchef.services;
 
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.apache.catalina.LifecycleState;
 import org.aspectj.lang.annotation.Before;
 import org.example.smartchef.dto.CrearUsuarioDTO;
 import org.example.smartchef.dto.UsuarioDTO;
 import org.example.smartchef.exception.ElementoNoEncontradoException;
+import org.example.smartchef.exception.ValidacionDeNegocioException;
 import org.example.smartchef.models.Preferencia;
 import org.example.smartchef.models.Usuario;
+import org.example.smartchef.repositories.IPreferenciaRepository;
+import org.example.smartchef.repositories.IUsuarioRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,26 +34,34 @@ public class UsuarioServiceTest {
     private UsuarioService service;
 
     @Autowired
+    private IUsuarioRepository repository;
+    @Autowired
+    private IPreferenciaRepository preferenciaRepository;
+
+    @Autowired
     private EntityManager entityManager;
 
     private Integer idUsuarioGenerado;
 
     @BeforeEach
     void cargarDatos() {
-        Usuario usuarioTest = new Usuario();
-        usuarioTest.setNombre("Usuario Test");
-        usuarioTest.setEmail("test@gmail.com");
-        usuarioTest.setPassword("password123");
-        usuarioTest.setDireccion("Calle 123");
-        usuarioTest.setCiudad("Madrid");
-        usuarioTest.setPais("España");
-        usuarioTest.setPreferencias(new HashSet<>());
-        usuarioTest.setFavoritos(new HashSet<>());
-        usuarioTest.setFoto(null);
 
-        entityManager.persist(usuarioTest);
+        Preferencia p1 = new Preferencia();
+        p1.setNombrePreferencia("Vegetariano");
+        preferenciaRepository.save(p1);
 
-        idUsuarioGenerado = usuarioTest.getId();
+        Preferencia p2 = new Preferencia();
+        p2.setNombrePreferencia("Sin Gluten");
+        preferenciaRepository.save(p2);
+
+        Preferencia p3 = new Preferencia();
+        p3.setNombrePreferencia("Comida Rápida");
+        preferenciaRepository.save(p3);
+
+        Preferencia p4 = new Preferencia();
+        p4.setNombrePreferencia("Economica");
+        preferenciaRepository.save(p4);
+
 
     }
 
@@ -56,32 +70,48 @@ public class UsuarioServiceTest {
 
     @Test
     @DisplayName("Servicio 1 -> Caso Positivo")
-    public void buscarPorIdTest() {
+    public void crearUsuarioConPreferenciasTest() {
         //Given
-        //Previos
+        CrearUsuarioDTO usuarioTest = new CrearUsuarioDTO();
+        usuarioTest.setNombre("Usuario Test");
+        usuarioTest.setEmail("test@gmail.com");
+        usuarioTest.setPassword("password123");
+        usuarioTest.setDireccion("Calle 123");
+        usuarioTest.setCiudad("Madrid");
+        usuarioTest.setPais("España");
 
-        // Then
-        UsuarioDTO dto = service.buscarPorId(1);
+        Set<Integer> preferenciasID = preferenciaRepository.findAll().stream()
+                .map(Preferencia::getId).collect(Collectors.toSet());
 
+        usuarioTest.setPreferenciasID(preferenciasID);
 
         // When
-        // Comprobaciones
-        assertNotNull(dto, "El usuario con ID " + idUsuarioGenerado + " debería existir");
-        assertEquals(dto.getNombre(), "Usuario Test", "El nombre del usuario no coincide");
-        assertEquals(dto.getEmail(),"test@gmail.com", "El email del usuario no coincide");
+        service.crearUsuarioConPreferencias(usuarioTest);
 
-        System.out.println(dto);
+
+        // Then
+        Usuario usuario = repository.findAll().stream()
+                .filter(u -> "Usuario Test".equals(u.getNombre()))
+                .findFirst().orElse(null);
+        // Comprobaciones
+        assertNotNull(usuario, "El usuario debería existir");
+        assertEquals(4, usuario.getPreferencias().size(), "Debería tener las 4 preferencias asignadas");
+
+        System.out.println(usuario);
     }
 
     @Test
     @DisplayName("Servicio 1 -> Caso Negativo")
-    public void buscarPorIdTestNegativo() {
+    public void crearUsuarioConPreferenciasTestNegativo() {
         //Given
+        CrearUsuarioDTO dtoError = new CrearUsuarioDTO();
+        dtoError.setNombre("Usuario Error");
+        dtoError.setPreferenciasID(Set.of(1,2,3,4,5));
 
         //Then
 
         //When
-        assertThrows(ElementoNoEncontradoException.class, () -> service.buscarPorId(3));
+        assertThrows(ValidacionDeNegocioException.class, () -> service.crearUsuarioConPreferencias(dtoError));
     }
 
 }
