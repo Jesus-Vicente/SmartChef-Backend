@@ -213,7 +213,6 @@ public class RecetaServiceTest {
         assertNotNull(estadisticas, "La lista no debe ser nula");
         assertFalse(estadisticas.isEmpty(), "Debería haber datos en las estadísticas");
 
-        // Extraemos nombres para verificar presencia sin importar el orden del empate
         List<String> nombres = estadisticas.stream()
                 .map(IngredienteEstadisticasDTO::getNombreIngrediente)
                 .toList();

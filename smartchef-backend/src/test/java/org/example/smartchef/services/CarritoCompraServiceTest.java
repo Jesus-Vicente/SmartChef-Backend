@@ -91,7 +91,7 @@ public class CarritoCompraServiceTest {
     @Test
     @DisplayName("Servicio 6 -> Caso Negativo")
     public void generarListaCompraTestNegativo() {
-        // Given: Creamos la primera vez
+        // Given
         GenerarListaCompraDTO dto = new GenerarListaCompraDTO();
         dto.setUsuarioId(idUsuario);
         dto.setRecetaId(idReceta);

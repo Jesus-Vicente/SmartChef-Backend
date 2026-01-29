@@ -93,7 +93,7 @@ public class UsuarioServiceTest {
         Usuario usuario = repository.findAll().stream()
                 .filter(u -> "Usuario Test".equals(u.getNombre()))
                 .findFirst().orElse(null);
-        // Comprobaciones
+
         assertNotNull(usuario, "El usuario debería existir");
         assertEquals(4, usuario.getPreferencias().size(), "Debería tener las 4 preferencias asignadas");
 
