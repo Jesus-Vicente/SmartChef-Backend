@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "coleccion_receta")
+@Table(name = "coleccion_receta", schema = "public")
 
 public class ColeccionReceta {
 

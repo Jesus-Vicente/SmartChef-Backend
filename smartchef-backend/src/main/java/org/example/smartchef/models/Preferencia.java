@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "preferencia_usuario")
+@Table(name = "preferencia_usuario", schema = "public")
 public class Preferencia {
 
     @Id

@@ -10,7 +10,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "usuario_preferencia")
+@Table(name = "usuario_preferencia", schema = "public")
 public class UsuarioPreferencia {
 
     @Id

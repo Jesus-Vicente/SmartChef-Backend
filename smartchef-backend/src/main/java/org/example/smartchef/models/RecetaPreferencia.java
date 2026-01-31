@@ -10,7 +10,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode(exclude = {"idPreferencia", "idReceta"})
 @Entity
-@Table(name = "receta_preferencia")
+@Table(name = "receta_preferencia", schema = "public")
 
 public class RecetaPreferencia {
 

@@ -13,7 +13,7 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "foto")
+@Table(name = "foto", schema = "public")
 public class Foto {
 
     @Id

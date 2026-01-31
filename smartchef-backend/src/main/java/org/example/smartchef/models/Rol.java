@@ -14,7 +14,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "rol")
+@Table(name = "rol", schema = "public")
 public class Rol {
 
     @Id

@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString(exclude = {"favoritos"})
 @EqualsAndHashCode(exclude = {"favoritos"})
 @Entity
-@Table(name = "usuario")
+@Table(name = "usuario", schema = "public")
 
 public class Usuario {
 

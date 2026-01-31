@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "carrito_ingrediente")
+@Table(name = "carrito_ingrediente", schema = "public")
 
 public class CarritoIngrediente {
 

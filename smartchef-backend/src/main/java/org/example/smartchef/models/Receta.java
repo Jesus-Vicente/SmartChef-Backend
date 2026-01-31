@@ -16,7 +16,7 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode(exclude = {"id_foto", "usuario_creador_id", "coleccion_receta", "receta_ingrediente", "usuarioQueFavorito", "recetaPreferencias"})
 @Entity
-@Table(name = "receta")
+@Table(name = "receta", schema = "public")
 public class Receta {
 
     @Id

@@ -14,7 +14,7 @@ import java.util.Set;
 @ToString(exclude = {"carritoIngrediente", "id_usuario", "id_receta"})
 @EqualsAndHashCode(exclude = {"carritoIngrediente", "id_usuario", "id_receta"})
 @Entity
-@Table(name = "carritocompra")
+@Table(name = "carritocompra", schema = "public")
 
 public class CarritoCompra {
 

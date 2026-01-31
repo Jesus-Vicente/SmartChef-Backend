@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @ToString
 @EqualsAndHashCode
 @Entity
-@Table(name = "historial")
+@Table(name = "historial", schema = "public")
 
 public class Historial {
 
