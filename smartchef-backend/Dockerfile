@@ -1,25 +1,26 @@
 # Etapa 1: Construcción (Build)
-# Usamos una imagen de Maven con JDK 21 para compilar
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copiamos el pom.xml para descargar las dependencias primero (aprovecha la caché de Docker)
-COPY . .
+# Copiamos solo el pom.xml primero para descargar dependencias.
+# Esto acelera futuros despliegues porque Docker cachea las librerías.
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
+# Ahora copiamos el código fuente y compilamos
+COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Etapa 2: Ejecución (Runtime)
-# Usamos una imagen ligera de JRE 21 para correr la app
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Copiamos el archivo .jar generado en la etapa anterior
-# El nombre suele ser el artifactId-version.jar definido en el pom.xml
+# Usar el asterisco *.jar es buena idea si no quieres escribir el nombre completo,
+# pero asegúrate de que solo haya un archivo .jar en target
 COPY --from=build /app/target/*.jar app.jar
 
-# Render asigna automáticamente un puerto, le decimos a Spring que lo use
+# Exponemos el puerto
 EXPOSE 8080
 
-# Comando para ejecutar la aplicación
-# Usamos parámetros de optimización de memoria para que no falle en el plan gratuito de Render
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Usamos la variable de entorno PORT que Render inyecta automáticamente
+ENTRYPOINT ["java", "-Dserver.port=${PORT:8080}", "-Xmx512m", "-jar", "app.jar"]
