@@ -1,26 +1,25 @@
-# Etapa 1: Construcción (Build)
-FROM maven:3.9-eclipse-temurin-21 AS build
+# ETAPA 1: Construcción
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copiamos solo el pom.xml primero para descargar dependencias.
-# Esto acelera futuros despliegues porque Docker cachea las librerías.
+# Copiamos archivos de configuración
 COPY pom.xml .
-RUN mvn dependency:go-offline
+# Forzamos la descarga de dependencias
+RUN mvn dependency:go-offline -B
 
-# Ahora copiamos el código fuente y compilamos
+# Copiamos código y compilamos
 COPY src ./src
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Ejecución (Runtime)
+# ETAPA 2: Ejecución
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# Usar el asterisco *.jar es buena idea si no quieres escribir el nombre completo,
-# pero asegúrate de que solo haya un archivo .jar en target
+# Usamos un comodín más seguro para copiar el JAR
 COPY --from=build /app/target/*.jar app.jar
 
-# Exponemos el puerto
+# Obligatorio para Render
 EXPOSE 8080
 
-# Usamos la variable de entorno PORT que Render inyecta automáticamente
-ENTRYPOINT ["java", "-Dserver.port=${PORT:8080}", "-Xmx512m", "-jar", "app.jar"]
+# Ajuste de memoria y puerto para evitar errores silenciosos
+ENTRYPOINT ["java", "-Xmx512m", "-Dserver.port=${PORT:8080}", "-jar", "app.jar"]
