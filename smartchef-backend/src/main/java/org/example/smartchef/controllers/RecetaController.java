@@ -19,6 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/receta")
 @AllArgsConstructor
+@CrossOrigin(origins = "https://smartchef-frontend.onrender.com")
 public class RecetaController {
 
     private RecetaService service;
