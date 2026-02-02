@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/historial-cocina")
 @AllArgsConstructor
+@CrossOrigin(origins = "https://frontend-smartchef.onrender.com")
 public class HistorialController {
 
     private HistorialService service;

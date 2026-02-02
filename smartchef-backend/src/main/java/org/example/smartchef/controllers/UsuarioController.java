@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/usuario")
 @AllArgsConstructor
+@CrossOrigin(origins = "https://frontend-smartchef.onrender.com")
 public class UsuarioController {
 
     private UsuarioService service;

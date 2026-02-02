@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/preferencia")
 @AllArgsConstructor
+@CrossOrigin(origins = "https://frontend-smartchef.onrender.com")
 public class PreferenciaController {
 
     private PreferenciaService service;
