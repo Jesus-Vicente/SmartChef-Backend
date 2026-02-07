@@ -26,33 +26,22 @@ public class RecetaServiceIntegrationTest {
 
     @Mock
     private IRecetaRepository repository;
-
     @Mock
     private IUsuarioRepository usuarioRepository;
-
     @Mock
     private IIngredientesRepository ingredienteRepository;
-
     @Mock
     private IPreferenciaRepository preferenciaRepository;
-
     @Mock
     private IRecetaPreferenciaRepository recetaPreferenciaRepository;
-
     @Mock
     private IRecetaIngredienteRepository recetaIngredienteRepository;
-
     @Mock
     private IFotoRepository fotoRepository;
-
-
     @Mock
     private RecetaMapper mapper;
     @Mock
     private UsuarioMapper usuarioMapper;
-
-
-
 
     @Test
     @DisplayName("Servicio 2 -> Crear Receta con Ingredientes")
