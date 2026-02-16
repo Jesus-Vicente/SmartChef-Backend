@@ -49,27 +49,27 @@ public class RecetaService {
     }
 
     @Transactional
-    public void crearReceta(CrearRecetaDTO dto){
+    public void crearReceta(CrearRecetaDTO dto) {
 
-        // 1. Manejo de la Foto
+        Foto fotoParaAsignar = null;
         if (dto.getUrl_foto() != null && !dto.getUrl_foto().isEmpty()) {
             Foto nuevaFoto = new Foto();
             nuevaFoto.setUrl(dto.getUrl_foto());
-            Foto fotoGuardada = fotoRepository.save(nuevaFoto);
-            dto.setId_foto(fotoGuardada.getId());
+            nuevaFoto.setFecha_subida(java.time.LocalDateTime.now());
+            fotoParaAsignar = fotoRepository.save(nuevaFoto);
+            dto.setId_foto(fotoParaAsignar.getId());
         }
 
-        // 2. BUSCAR EL USUARIO CREADOR COMPLETO
         Usuario usuarioCreador = usuarioRepository.findById(dto.getIdUsuarioCreador())
                 .orElseThrow(() -> new RuntimeException("Usuario Creador no encontrado con ID: " + dto.getIdUsuarioCreador()));
 
-        // 3. Mapear DTO a la Entidad Receta
         Receta receta = mapper.convertirAEntityCrearRecetaConIngredientes(dto);
 
-        // 4. ASIGNAR LA ENTIDAD USUARIO COMPLETA A LA RECETA
         receta.setUsuario_creador_id(usuarioCreador);
+        if (fotoParaAsignar != null) {
+            receta.setId_foto(fotoParaAsignar);
+        }
 
-        // 5. Guardar Receta
         Receta recetaGuardada = repository.save(receta);
 
         List<IngredienteRecetaDTO> ingredientesDetalles = dto.getIngredientesConDetalle();

@@ -21,6 +21,7 @@ public class Foto {
     @Column(name = "id")
     private Integer id;
 
+    @Lob
     @Column(name = "url")
     private String url;
 
