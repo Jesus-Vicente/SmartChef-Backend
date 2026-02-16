@@ -20,11 +20,11 @@ public class Foto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
-    
-    @Column(name = "url")
+
+    @Column(name = "url", columnDefinition = "TEXT")
     private String url;
 
-    @Column(name = "descripcion")
+    @Column(name = "descripcion", columnDefinition = "TEXT")
     private String descripcion;
 
     @Column(name = "fecha_subida")
